@@ -3,7 +3,7 @@
 
 const API_CONFIG = {
   // ✅ ใช้ IP เดียวกับ web app
-  BASE_URL: 'http://18.140.210.192:9001', // AWS Lightsail IP
+  BASE_URL: 'http://18.140.210.192', // AWS Lightsail IP
   // BASE_URL: 'http://localhost:9001', // Development
   
   ENDPOINTS: {

@@ -1,5 +1,5 @@
 // src/screens/Customer/CustomerListScreen.js
-// 👥 Customer List Screen
+// 👥 Customer List Screen (Styled)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -21,7 +21,7 @@ import { debounce } from '../../utils/helpers';
 export default function CustomerListScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  
+
   const { customerList, pagination, filters, isLoading } = useSelector(
     state => state.customer
   );
@@ -70,62 +70,80 @@ export default function CustomerListScreen() {
     navigation.navigate('CustomerDetail', { customer });
   };
 
-  const renderCustomer = ({ item }) => (
-    <TouchableOpacity
-      style={styles.customerCard}
-      onPress={() => handleCustomerPress(item)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.customerHeader}>
-        <View style={styles.avatarContainer}>
-          <Icon name="person" size={24} color="#ffffff" />
-        </View>
-        <View style={styles.customerInfo}>
-          <Text style={styles.customerCode}>{item.Code}</Text>
-          <Text style={styles.customerName} numberOfLines={1}>
-            {item.Name}
-          </Text>
-        </View>
-        <Icon name="chevron-forward" size={20} color="#94a3b8" />
-      </View>
+  const renderCustomer = ({ item }) => {
+    const maxCredit = parseFloat(item.MaxCr || 0);
+    const creditTerm = item.CRTERM || 0;
 
-      <View style={styles.customerDetails}>
-        <View style={styles.detailRow}>
-          <Icon name="location-outline" size={16} color="#64748b" />
-          <Text style={styles.detailText} numberOfLines={1}>
-            {item.addr || 'ไม่ระบุที่อยู่'}
-          </Text>
+    return (
+      <TouchableOpacity
+        style={styles.customerCard}
+        onPress={() => handleCustomerPress(item)}
+        activeOpacity={0.8}
+      >
+        {/* Header */}
+        <View style={styles.customerHeader}>
+          <View style={styles.avatarContainer}>
+            <Icon name="person" size={26} color="#ffffff" />
+          </View>
+
+          <View style={styles.customerInfo}>
+            <Text style={styles.customerCode}>{item.Code}</Text>
+            <Text style={styles.customerName} numberOfLines={1}>
+              {item.Name || 'ไม่ระบุชื่อ'}
+            </Text>
+          </View>
+
+          <Icon name="chevron-forward" size={20} color="#94a3b8" />
         </View>
-        
-        {item.Phone && (
+
+        {/* Details */}
+        <View style={styles.customerDetails}>
           <View style={styles.detailRow}>
-            <Icon name="call-outline" size={16} color="#64748b" />
-            <Text style={styles.detailText}>{item.Phone}</Text>
+            <Icon name="location-outline" size={16} color="#64748b" />
+            <Text style={styles.detailText} numberOfLines={1}>
+              {item.addr || 'ไม่ระบุที่อยู่'}
+            </Text>
           </View>
-        )}
 
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>วงเงิน</Text>
-            <Text style={styles.statValue}>฿{item.MaxCr || '0'}</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>ระยะเวลา</Text>
-            <Text style={styles.statValue}>{item.CRTERM || '0'} วัน</Text>
+          {item.Phone && (
+            <View style={styles.detailRow}>
+              <Icon name="call-outline" size={16} color="#64748b" />
+              <Text style={styles.detailText}>{item.Phone}</Text>
+            </View>
+          )}
+
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>วงเงินเครดิต</Text>
+              <Text style={styles.statValue}>
+                ฿{maxCredit.toLocaleString()}
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>เครดิตเทอม</Text>
+              <View style={styles.termPill}>
+                <Icon name="time-outline" size={14} color="#0f172a" />
+                <Text style={styles.termText}>{creditTerm} วัน</Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const renderHeader = () => (
     <View style={styles.header}>
       <Text style={styles.title}>ข้อมูลลูกค้า</Text>
+      <Text style={styles.subtitle}>
+        ดูรายชื่อลูกค้า วงเงินเครดิต และข้อมูลติดต่อ
+      </Text>
+
       <View style={styles.searchContainer}>
         <Icon name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="ค้นหาลูกค้า..."
+          placeholder="ค้นหาลูกค้า (รหัส / ชื่อ / เบอร์)..."
           value={searchText}
           onChangeText={handleSearch}
           placeholderTextColor="#94a3b8"
@@ -195,10 +213,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 16,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    marginBottom: 12,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -206,8 +229,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -219,28 +242,30 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     color: '#1e293b',
   },
   resultCount: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#64748b',
   },
   customerCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 14,
     marginBottom: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#0ea5e9',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   customerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   avatarContainer: {
     width: 48,
@@ -257,45 +282,60 @@ const styles = StyleSheet.create({
   customerCode: {
     fontSize: 12,
     color: '#64748b',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   customerName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#0f172a',
   },
   customerDetails: {
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
-    paddingTop: 12,
+    paddingTop: 10,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#64748b',
     marginLeft: 8,
     flex: 1,
   },
   statsRow: {
     flexDirection: 'row',
-    marginTop: 8,
+    marginTop: 6,
   },
   statItem: {
     flex: 1,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#64748b',
-    marginBottom: 4,
+    fontSize: 11,
+    color: '#94a3b8',
+    marginBottom: 2,
   },
   statValue: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#0ea5e9',
+  },
+  termPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#e5f3ff',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginTop: 2,
+  },
+  termText: {
+    fontSize: 12,
+    color: '#0f172a',
+    marginLeft: 4,
   },
   footer: {
     paddingVertical: 20,

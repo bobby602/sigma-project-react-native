@@ -1,5 +1,5 @@
 // src/screens/Profile/ProfileScreen.js
-// 👤 Profile Screen
+// 👤 Profile Screen (Styled)
 
 import React from 'react';
 import {
@@ -53,20 +53,22 @@ export default function ProfileScreen() {
   ];
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Icon name="person" size={48} color="#ffffff" />
+          <Icon name="person" size={50} color="#ffffff" />
         </View>
         <Text style={styles.name}>{user?.Name || 'ผู้ใช้งาน'}</Text>
         <Text style={styles.role}>{getUserRole(user?.StAdmin)}</Text>
       </View>
 
+      {/* Personal Info */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>ข้อมูลส่วนตัว</Text>
         {profileItems.map((item, index) => (
           <View key={index} style={styles.infoCard}>
-            <Icon name={item.icon} size={24} color="#64748b" />
+            <Icon name={item.icon} size={22} color="#64748b" />
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>{item.label}</Text>
               <Text style={styles.infoValue}>{item.value}</Text>
@@ -75,33 +77,35 @@ export default function ProfileScreen() {
         ))}
       </View>
 
+      {/* Settings */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>การตั้งค่า</Text>
-        
+
         <TouchableOpacity style={styles.settingCard}>
-          <Icon name="notifications-outline" size={24} color="#64748b" />
+          <Icon name="notifications-outline" size={22} color="#64748b" />
           <Text style={styles.settingText}>การแจ้งเตือน</Text>
           <Icon name="chevron-forward" size={20} color="#94a3b8" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.settingCard}>
-          <Icon name="shield-checkmark-outline" size={24} color="#64748b" />
+          <Icon name="shield-checkmark-outline" size={22} color="#64748b" />
           <Text style={styles.settingText}>ความเป็นส่วนตัว</Text>
           <Icon name="chevron-forward" size={20} color="#94a3b8" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.settingCard}>
-          <Icon name="help-circle-outline" size={24} color="#64748b" />
+          <Icon name="help-circle-outline" size={22} color="#64748b" />
           <Text style={styles.settingText}>ช่วยเหลือ</Text>
           <Icon name="chevron-forward" size={20} color="#94a3b8" />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity 
+      {/* Logout */}
+      <TouchableOpacity
         style={styles.logoutButton}
         onPress={handleLogout}
       >
-        <Icon name="log-out-outline" size={24} color="#ffffff" />
+        <Icon name="log-out-outline" size={22} color="#ffffff" />
         <Text style={styles.logoutText}>ออกจากระบบ</Text>
       </TouchableOpacity>
 
@@ -113,55 +117,61 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#0f172a',
+  },
+  content: {
+    paddingBottom: 24,
   },
   header: {
-    backgroundColor: '#ffffff',
-    padding: 24,
+    backgroundColor: '#0f172a',
+    paddingTop: 60,
+    paddingBottom: 28,
+    paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
   },
   avatarContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     backgroundColor: '#0ea5e9',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#f9fafb',
     marginBottom: 4,
   },
   role: {
-    fontSize: 16,
-    color: '#64748b',
+    fontSize: 14,
+    color: '#cbd5f5',
   },
   section: {
     padding: 16,
+    backgroundColor: '#f8fafc',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 12,
+    color: '#0f172a',
+    marginBottom: 10,
   },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -170,25 +180,25 @@ const styles = StyleSheet.create({
   },
   infoContent: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 14,
   },
   infoLabel: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 4,
+    fontSize: 12,
+    color: '#94a3b8',
+    marginBottom: 2,
   },
   infoValue: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
-    color: '#1e293b',
+    color: '#0f172a',
   },
   settingCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -197,31 +207,31 @@ const styles = StyleSheet.create({
   },
   settingText: {
     flex: 1,
-    fontSize: 16,
-    color: '#1e293b',
-    marginLeft: 16,
+    fontSize: 15,
+    color: '#0f172a',
+    marginLeft: 14,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#ef4444',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    padding: 14,
     marginHorizontal: 16,
-    marginTop: 24,
-    marginBottom: 16,
+    marginTop: 8,
+    marginBottom: 12,
   },
   logoutText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: '#ffffff',
     marginLeft: 8,
   },
   version: {
     textAlign: 'center',
-    color: '#94a3b8',
+    color: '#9ca3af',
     fontSize: 12,
-    paddingBottom: 24,
+    marginBottom: 8,
   },
 });

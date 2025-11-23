@@ -1,5 +1,5 @@
 // src/screens/Price/PriceListScreen.js
-// 💰 Price List Screen with Inline Editing
+// 💰 Price List Screen with Inline Editing (Styled)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -27,11 +27,11 @@ import { debounce, formatCurrency } from '../../utils/helpers';
 
 export default function PriceListScreen() {
   const dispatch = useDispatch();
-  
-  const { 
-    priceList, 
-    pagination, 
-    filters, 
+
+  const {
+    priceList,
+    pagination,
+    filters,
     pendingChanges,
     isLoading,
     isSaving,
@@ -42,35 +42,39 @@ export default function PriceListScreen() {
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchPriceList({
-      page: pagination.page,
-      limit: pagination.limit,
-      search: filters.search,
-      departCode: filters.departCode,
-    }));
+    dispatch(
+      fetchPriceList({
+        page: pagination.page,
+        limit: pagination.limit,
+        search: filters.search,
+        departCode: filters.departCode,
+      }),
+    );
   }, [dispatch, pagination.page, filters.search, filters.departCode]);
 
   const debouncedSearch = useCallback(
-    debounce((text) => {
+    debounce(text => {
       dispatch(setFilters({ search: text }));
       dispatch(setPage(1));
     }, 500),
-    [dispatch]
+    [dispatch],
   );
 
-  const handleSearch = (text) => {
+  const handleSearch = text => {
     setSearchText(text);
     debouncedSearch(text);
   };
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await dispatch(fetchPriceList({
-      page: 1,
-      limit: pagination.limit,
-      search: filters.search,
-      departCode: filters.departCode,
-    }));
+    await dispatch(
+      fetchPriceList({
+        page: 1,
+        limit: pagination.limit,
+        search: filters.search,
+        departCode: filters.departCode,
+      }),
+    );
     setRefreshing(false);
   };
 
@@ -82,23 +86,27 @@ export default function PriceListScreen() {
 
   const handlePriceEdit = (item, field, value) => {
     const key = `${item.ItemCode}-${field}`;
-    dispatch(addPendingChange({
-      key,
-      value: {
-        ItemCode: item.ItemCode,
-        field,
-        value: parseFloat(value) || 0,
-      },
-    }));
+    dispatch(
+      addPendingChange({
+        key,
+        value: {
+          ItemCode: item.ItemCode,
+          field,
+          value: parseFloat(value) || 0,
+        },
+      }),
+    );
   };
 
-  const handleSavePrice = async (item) => {
+  const handleSavePrice = async item => {
     try {
-      await dispatch(updatePrice({
-        ItemCode: item.ItemCode,
-        ...item,
-      })).unwrap();
-      
+      await dispatch(
+        updatePrice({
+          ItemCode: item.ItemCode,
+          ...item,
+        }),
+      ).unwrap();
+
       Alert.alert('สำเร็จ', 'บันทึกราคาเรียบร้อยแล้ว');
       setEditingItem(null);
     } catch (error) {
@@ -106,28 +114,46 @@ export default function PriceListScreen() {
     }
   };
 
+  const pendingCount = pendingChanges
+    ? Object.keys(pendingChanges).length
+    : 0;
+
   const renderPrice = ({ item }) => {
     const isEditing = editingItem?.ItemCode === item.ItemCode;
 
     return (
-      <View style={styles.priceCard}>
+      <View style={[styles.priceCard, isEditing && styles.priceCardEditing]}>
         <View style={styles.priceHeader}>
-          <Text style={styles.priceCode}>{item.ItemCode}</Text>
+          <View>
+            <Text style={styles.priceCode}>{item.ItemCode}</Text>
+            <Text style={styles.priceName} numberOfLines={2}>
+              {item.Name || item.NameFG || '-'}
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={() => setEditingItem(isEditing ? null : item)}
             style={styles.editButton}
           >
-            <Icon 
-              name={isEditing ? 'close' : 'create-outline'} 
-              size={20} 
+            <Icon
+              name={isEditing ? 'close' : 'create-outline'}
+              size={20}
               color={isEditing ? '#ef4444' : '#0ea5e9'}
             />
           </TouchableOpacity>
         </View>
-        
-        <Text style={styles.priceName} numberOfLines={2}>
-          {item.Name || item.NameFG}
-        </Text>
+
+        {isEditing && (
+          <View style={styles.editingBanner}>
+            <Icon
+              name="information-circle-outline"
+              size={14}
+              color="#0ea5e9"
+            />
+            <Text style={styles.editingBannerText}>
+              แก้ไขราคาขายและต้นทุน จากนั้นกดปุ่ม &quot;บันทึก&quot; ด้านล่าง
+            </Text>
+          </View>
+        )}
 
         <View style={styles.priceGrid}>
           <View style={styles.priceItem}>
@@ -137,7 +163,9 @@ export default function PriceListScreen() {
                 style={styles.priceInput}
                 defaultValue={String(item.Price || 0)}
                 keyboardType="numeric"
-                onChangeText={(value) => handlePriceEdit(item, 'Price', value)}
+                onChangeText={value =>
+                  handlePriceEdit(item, 'Price', value)
+                }
               />
             ) : (
               <Text style={styles.priceValue}>
@@ -153,10 +181,12 @@ export default function PriceListScreen() {
                 style={styles.priceInput}
                 defaultValue={String(item.CostN || 0)}
                 keyboardType="numeric"
-                onChangeText={(value) => handlePriceEdit(item, 'CostN', value)}
+                onChangeText={value =>
+                  handlePriceEdit(item, 'CostN', value)
+                }
               />
             ) : (
-              <Text style={styles.priceValue}>
+              <Text style={styles.priceValueCost}>
                 ฿{formatCurrency(item.CostN || 0)}
               </Text>
             )}
@@ -186,11 +216,20 @@ export default function PriceListScreen() {
   const renderHeader = () => (
     <View style={styles.header}>
       <Text style={styles.title}>บันทึกราคาสินค้า</Text>
+      <Text style={styles.subtitle}>
+        แก้ไขราคาขายและต้นทุนได้จากหน้าจอนี้โดยตรง
+      </Text>
+
       <View style={styles.searchContainer}>
-        <Icon name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
+        <Icon
+          name="search"
+          size={20}
+          color="#94a3b8"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
-          placeholder="ค้นหาสินค้า..."
+          placeholder="ค้นหาสินค้า (รหัสหรือชื่อสินค้า)..."
           value={searchText}
           onChangeText={handleSearch}
           placeholderTextColor="#94a3b8"
@@ -201,9 +240,23 @@ export default function PriceListScreen() {
           </TouchableOpacity>
         )}
       </View>
+
       <Text style={styles.resultCount}>
         แสดง {priceList.length} จาก {pagination.total || 0} รายการ
       </Text>
+
+      {pendingCount > 0 && (
+        <View style={styles.pendingBanner}>
+          <Icon
+            name="alert-circle-outline"
+            size={16}
+            color="#92400e"
+          />
+          <Text style={styles.pendingText}>
+            มีราคาแก้ไขค้างอยู่ {pendingCount} ค่า กรุณากด &quot;บันทึก&quot; ที่รายการนั้น ๆ
+          </Text>
+        </View>
+      )}
     </View>
   );
 
@@ -260,9 +313,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#64748b',
     marginBottom: 16,
   },
   searchContainer: {
@@ -271,8 +329,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -284,51 +342,89 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     color: '#1e293b',
   },
   resultCount: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#64748b',
+  },
+  pendingBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#fffbeb',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#fbbf24',
+  },
+  pendingText: {
+    flex: 1,
+    marginLeft: 6,
+    fontSize: 12,
+    color: '#78350f',
   },
   priceCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 14,
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+  },
+  priceCardEditing: {
+    borderWidth: 1,
+    borderColor: '#0ea5e9',
   },
   priceHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 6,
   },
   priceCode: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#475569',
+    marginBottom: 4,
+  },
+  priceName: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#0f172a',
+    lineHeight: 20,
   },
   editButton: {
     padding: 4,
   },
-  priceName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1e293b',
-    marginBottom: 12,
-    lineHeight: 22,
+  editingBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#ecfeff',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    marginBottom: 10,
+  },
+  editingBannerText: {
+    flex: 1,
+    marginLeft: 6,
+    fontSize: 11,
+    color: '#0369a1',
   },
   priceGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 4,
   },
   priceItem: {
     flex: 1,
+    marginRight: 12,
   },
   priceLabel: {
     fontSize: 12,
@@ -337,8 +433,13 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#0ea5e9',
+  },
+  priceValueCost: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#22c55e',
   },
   priceInput: {
     fontSize: 16,
@@ -347,21 +448,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
     paddingVertical: 4,
+    paddingHorizontal: 2,
+    backgroundColor: '#f8fafc',
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#0ea5e9',
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: 10,
+    paddingVertical: 10,
     marginTop: 12,
   },
   saveButtonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: 6,
   },
   footer: {
     paddingVertical: 20,

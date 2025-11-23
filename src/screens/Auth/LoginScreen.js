@@ -1,5 +1,5 @@
 // src/screens/Auth/LoginScreen.js
-// 🔐 Login Screen
+// 🔐 Login Screen (Styled Card)
 
 import React, { useState } from 'react';
 import {
@@ -20,7 +20,7 @@ import { login } from '../../store/authSlice';
 export default function LoginScreen() {
   const dispatch = useDispatch();
   const { isLoading, error } = useSelector(state => state.auth);
-  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -36,29 +36,33 @@ export default function LoginScreen() {
       console.log('✅ Login successful:', result);
     } catch (err) {
       console.error('❌ Login failed:', err);
-      Alert.alert('เข้าสู่ระบบไม่สำเร็จ', err || 'กรุณาลองใหม่อีกครั้ง');
+      const message =
+        typeof err === 'string'
+          ? err
+          : err?.message || 'กรุณาลองใหม่อีกครั้ง';
+      Alert.alert('เข้าสู่ระบบไม่สำเร็จ', message);
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <View style={styles.content}>
-        {/* Logo */}
+        {/* Logo & Title */}
         <Image
           source={require('../../assets/logo.png')}
           style={styles.logo}
           resizeMode="contain"
         />
-
-        {/* Title */}
         <Text style={styles.title}>Sigma Group Thailand</Text>
         <Text style={styles.subtitle}>ระบบจัดการธุรกิจ</Text>
 
-        {/* Input Fields */}
-        <View style={styles.inputContainer}>
+        {/* Form Card */}
+        <View style={styles.formCard}>
+          <Text style={styles.formTitle}>เข้าสู่ระบบ</Text>
+
           <TextInput
             style={styles.input}
             placeholder="ชื่อผู้ใช้"
@@ -67,6 +71,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             editable={!isLoading}
+            placeholderTextColor="#9ca3af"
           />
 
           <TextInput
@@ -79,12 +84,11 @@ export default function LoginScreen() {
             autoCorrect={false}
             editable={!isLoading}
             onSubmitEditing={handleLogin}
+            placeholderTextColor="#9ca3af"
           />
 
           {/* Error Message */}
-          {error && (
-            <Text style={styles.errorText}>{error}</Text>
-          )}
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
           {/* Login Button */}
           <TouchableOpacity
@@ -100,7 +104,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
+        {/* Version */}
         <Text style={styles.version}>Version 2.0.0</Text>
       </View>
     </KeyboardAvoidingView>
@@ -110,7 +114,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#0f172a',
   },
   content: {
     flex: 1,
@@ -119,46 +123,61 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 24,
+    width: 140,
+    height: 140,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#e5e7eb',
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#64748b',
-    marginBottom: 40,
+    fontSize: 14,
+    color: '#9ca3af',
+    marginBottom: 24,
   },
-  inputContainer: {
+  formCard: {
     width: '100%',
     maxWidth: 400,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  formTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 16,
   },
   input: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f9fafb',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: '#e5e7eb',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    marginBottom: 16,
-    color: '#1e293b',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    marginBottom: 12,
+    color: '#111827',
   },
   button: {
     backgroundColor: '#0ea5e9',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: 8,
     shadowColor: '#0ea5e9',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
     elevation: 4,
   },
   buttonDisabled: {
@@ -168,19 +187,19 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   errorText: {
     color: '#ef4444',
-    fontSize: 14,
-    marginBottom: 12,
+    fontSize: 13,
+    marginBottom: 8,
     textAlign: 'center',
   },
   version: {
     position: 'absolute',
     bottom: 24,
-    color: '#94a3b8',
+    color: '#6b7280',
     fontSize: 12,
   },
 });
