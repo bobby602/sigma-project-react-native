@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "SigmaGroupMobileNew",
-    "slug": "SigmaGroupMobileNew",
-    "version": "1.0.0",
+    "name": "Sigma Group Mobile",
+    "slug": "sigma-group-mobile",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sigmagroupmobilenew",
+    "scheme": "sigmagroupmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sigmagroup.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,14 +20,15 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sigmagroup.mobile"
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "entryPoint": "./App.js",
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -39,10 +41,6 @@
           }
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    }
+    ]
   }
 }
